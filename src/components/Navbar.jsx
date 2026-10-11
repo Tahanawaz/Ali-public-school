@@ -3,14 +3,13 @@ import {
   Menu, 
   X, 
   Phone, 
-  Mail, 
   GraduationCap, 
   ChevronRight,
-  Database,
+  ShieldCheck,
   Clock
 } from 'lucide-react';
 
-export default function Navbar({ onOpenAdmissions, onOpenInquiriesList }) {
+export default function Navbar({ onOpenAdmissions }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -54,13 +53,13 @@ export default function Navbar({ onOpenAdmissions, onOpenInquiriesList }) {
               <span>(042) 3588-4100</span>
             </a>
             <span className="utility-divider">•</span>
-            <button 
-              onClick={onOpenInquiriesList}
+            <button
+              onClick={onOpenAdmissions}
               className="portal-badge-btn"
-              title="Access Node.js backend inquiry database"
+              title="Open the secure online admissions form"
             >
-              <Database size={12} />
-              <span>Database Records</span>
+              <ShieldCheck size={12} />
+              <span>Secure Online Admissions</span>
             </button>
           </div>
         </div>
@@ -148,17 +147,15 @@ export default function Navbar({ onOpenAdmissions, onOpenInquiriesList }) {
                   <GraduationCap size={18} />
                   <span>Start Admission Application</span>
                 </button>
-                <button 
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onOpenInquiriesList();
-                  }}
+                <a
+                  href="#contact"
                   className="btn-portal-outline"
+                  onClick={() => setMobileMenuOpen(false)}
                   style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }}
                 >
-                  <Database size={15} />
-                  <span>View Database Inquiries</span>
-                </button>
+                  <Phone size={15} />
+                  <span>Book a Campus Visit</span>
+                </a>
               </div>
             </div>
           </div>

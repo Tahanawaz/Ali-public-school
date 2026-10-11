@@ -3,9 +3,43 @@ import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY;
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim());
 
-app.use(cors());
-app.use(express.json());
+app.disable('x-powered-by');
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Origin is not allowed by CORS'));
+  }
+}));
+app.use(express.json({ limit: '20kb' }));
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
+const submissionWindows = new Map();
+const submissionLimiter = (req, res, next) => {
+  const now = Date.now();
+  const key = req.ip;
+  const recent = (submissionWindows.get(key) || []).filter((time) => now - time < 10 * 60 * 1000);
+  if (recent.length >= 8) {
+    return res.status(429).json({ success: false, message: 'Too many submissions. Please try again in a few minutes.' });
+  }
+  recent.push(now);
+  submissionWindows.set(key, recent);
+  next();
+};
+
+const cleanText = (value, maxLength = 200) => typeof value === 'string'
+  ? value.trim().replace(/\s+/g, ' ').slice(0, maxLength)
+  : '';
+const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 // In-memory database with pre-populated records for Ali Public School
 const schoolData = {
@@ -298,6 +332,9 @@ app.get('/api/testimonials', (req, res) => {
 
 // 7. Admissions Inquiry Submission
 app.get('/api/inquiries', (req, res) => {
+  if (!ADMIN_API_KEY || req.get('x-admin-key') !== ADMIN_API_KEY) {
+    return res.status(401).json({ success: false, message: 'Administrator authentication required.' });
+  }
   res.json({ 
     success: true, 
     total: schoolData.inquiries.length,
@@ -305,18 +342,24 @@ app.get('/api/inquiries', (req, res) => {
   });
 });
 
-app.post('/api/inquiries', (req, res) => {
-  const { parentName, email, phone, studentName, gradeApplying, academicYear, message } = req.body;
+app.post('/api/inquiries', submissionLimiter, (req, res) => {
+  const parentName = cleanText(req.body.parentName, 80);
+  const email = cleanText(req.body.email, 120).toLowerCase();
+  const phone = cleanText(req.body.phone, 24);
+  const studentName = cleanText(req.body.studentName, 80);
+  const gradeApplying = cleanText(req.body.gradeApplying, 80);
+  const academicYear = cleanText(req.body.academicYear, 60);
+  const message = cleanText(req.body.message, 500);
 
-  if (!parentName || !email || !studentName || !gradeApplying) {
+  if (!parentName || !isEmail(email) || !phone || !studentName || !gradeApplying) {
     return res.status(400).json({
       success: false,
-      message: "Please provide Parent Name, Email, Student Name, and Grade Applying."
+      message: 'Please provide valid parent, student, email, phone, and grade details.'
     });
   }
 
   const newInquiry = {
-    id: `APS-${2000 + schoolData.inquiries.length + 1}`,
+    id: `APS-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`,
     parentName,
     email,
     phone: phone || "Not provided",
@@ -337,13 +380,29 @@ app.post('/api/inquiries', (req, res) => {
   });
 });
 
+app.post('/api/events/:eventId/rsvp', submissionLimiter, (req, res) => {
+  const event = schoolData.events.find((item) => item.id === req.params.eventId);
+  if (!event) return res.status(404).json({ success: false, message: 'Event not found.' });
+  if (event.seatsLeft <= 0) return res.status(409).json({ success: false, message: 'Registration is closed for this event.' });
+
+  event.seatsLeft -= 1;
+  return res.json({
+    success: true,
+    message: 'Your visitor pass has been reserved for this demo session.',
+    data: { eventId: event.id, seatsLeft: event.seatsLeft }
+  });
+});
+
 // 8. Contact message
-app.post('/api/contact', (req, res) => {
-  const { name, email, subject, message } = req.body;
-  if (!name || !email || !message) {
+app.post('/api/contact', submissionLimiter, (req, res) => {
+  const name = cleanText(req.body.name, 80);
+  const email = cleanText(req.body.email, 120).toLowerCase();
+  const subject = cleanText(req.body.subject, 100);
+  const message = cleanText(req.body.message, 800);
+  if (!name || !isEmail(email) || !message) {
     return res.status(400).json({
       success: false,
-      message: "Please fill in all required fields (Name, Email, Message)."
+      message: 'Please provide a valid name, email address, and message.'
     });
   }
 

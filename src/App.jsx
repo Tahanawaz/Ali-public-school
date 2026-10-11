@@ -11,12 +11,11 @@ import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import AdmissionsModal from './components/AdmissionsModal';
 import { useScrollReveal } from './hooks/useScrollReveal';
-import { ArrowUp, Sparkles, MessageCircle } from 'lucide-react';
+import { ArrowUp, Sparkles } from 'lucide-react';
 import './App.css';
 
 export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalTab, setModalTab] = useState('form'); // 'form' or 'inquiries'
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -27,8 +26,6 @@ export default function App() {
     const handleScroll = () => {
       const totalScroll = document.documentElement.scrollTop;
       const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scroll = `${(totalScroll / windowHeight) * 100}%`;
-      
       setScrollProgress((totalScroll / windowHeight) * 100);
       setShowScrollTop(totalScroll > 320);
     };
@@ -45,12 +42,6 @@ export default function App() {
   };
 
   const handleOpenAdmissions = () => {
-    setModalTab('form');
-    setModalOpen(true);
-  };
-
-  const handleOpenInquiriesList = () => {
-    setModalTab('inquiries');
     setModalOpen(true);
   };
 
@@ -63,10 +54,7 @@ export default function App() {
       />
 
       {/* Clean Navigation Header */}
-      <Navbar 
-        onOpenAdmissions={handleOpenAdmissions} 
-        onOpenInquiriesList={handleOpenInquiriesList}
-      />
+      <Navbar onOpenAdmissions={handleOpenAdmissions} />
 
       {/* Main Page Sections with Scroll Reveals */}
       <main>
@@ -87,7 +75,6 @@ export default function App() {
       <AdmissionsModal 
         isOpen={modalOpen} 
         onClose={() => setModalOpen(false)}
-        initialTab={modalTab}
       />
 
       {/* Floating Action Button: Scroll to Top with Progress */}

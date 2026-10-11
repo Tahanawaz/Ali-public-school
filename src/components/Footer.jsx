@@ -7,6 +7,8 @@ import {
   GraduationCap
 } from 'lucide-react';
 
+const currentYear = new Date().getFullYear();
+
 export default function Footer({ onOpenAdmissions }) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -121,9 +123,9 @@ export default function Footer({ onOpenAdmissions }) {
         {/* Bottom Bar */}
         <div className="footer-bottom-bar">
           <div className="bottom-left-copy">
-            <span>&copy; {new Date().getFullYear()} Ali Public School for Girls (Regd.). All Rights Reserved.</span>
+            <span>&copy; {currentYear} Ali Public School for Girls (Regd.). All Rights Reserved.</span>
             <span className="bottom-dot">•</span>
-            <span>Registered BISE Educational Institution</span>
+            <span>Website demonstration • Institutional details subject to school verification</span>
           </div>
 
           <button onClick={scrollToTop} className="btn-back-top" aria-label="Back to Top">

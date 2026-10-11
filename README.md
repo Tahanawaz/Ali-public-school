@@ -1,6 +1,6 @@
-# Oakridge Horizon Academy - School Web Application Demo
+# Ali Public School for Girls — Digital School Experience
 
-A fullstack school web platform built with a **React.js** frontend and a **Node.js (Express)** backend.
+A presentation-ready full-stack school website built with a **React** frontend and a **Node.js (Express)** API. It demonstrates the public school experience, online admissions, campus information, events, and inquiry handling.
 
 ---
 
@@ -15,7 +15,7 @@ A fullstack school web platform built with a **React.js** frontend and a **Node.
 - **Events & Announcements**: Real-time news bulletin with interactive event pass reservation (RSVP).
 - **Faculty Directory**: Showcase of educators with academic credentials from Oxford, MIT, and Columbia.
 - **Testimonials**: Authentic reviews from parents, student council leaders, and alumni.
-- **Online Admissions Portal**: Glassmorphic modal supporting priority application submissions and a live **Backend Database Inspector** tab.
+- **Online Admissions Portal**: Accessible, privacy-conscious application flow with a trackable confirmation receipt.
 - **Contact & Inquiries**: Working contact form communicating with the Node.js API.
 
 ### Backend (Node.js + Express)
@@ -26,8 +26,9 @@ A fullstack school web platform built with a **React.js** frontend and a **Node.
 - `GET /api/events` - Upcoming tour dates, events, and seat availability
 - `GET /api/faculty` - Faculty member credentials and quotes
 - `GET /api/testimonials` - Reviews from students and parents
-- `GET /api/inquiries` - List of processed admission inquiries
+- `GET /api/inquiries` - Protected administrator-only list (requires `ADMIN_API_KEY` and `x-admin-key`)
 - `POST /api/inquiries` - Submit a new student application with validation & auto ID generation
+- `POST /api/events/:eventId/rsvp` - Reserve an available visitor pass
 - `POST /api/contact` - Route general contact messages
 - `GET /api/health` - Server status and uptime health check
 
@@ -49,4 +50,12 @@ npm run dev
 npm run dev:client  # Run only Vite React frontend
 npm run dev:server  # Run only Node.js Express server
 npm run build       # Build production bundle
+npm run check       # Run lint checks and production build
 ```
+
+## Demo configuration
+
+- Public form submissions are kept in memory and reset whenever the API restarts.
+- Set `ADMIN_API_KEY` before starting the server to enable authenticated access to admission records.
+- Set `ALLOWED_ORIGINS` to a comma-separated list of trusted frontend origins in production.
+- All institutional claims, contact details, statistics, and testimonials should be verified by school management before launch.

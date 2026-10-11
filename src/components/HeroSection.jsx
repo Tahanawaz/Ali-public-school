@@ -3,7 +3,6 @@ import {
   ArrowRight, 
   Compass, 
   CheckCircle2, 
-  GraduationCap,
   ShieldCheck,
   Award,
   Sparkles,

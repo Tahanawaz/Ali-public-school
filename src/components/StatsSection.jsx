@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Users, 
   UserCheck, 
@@ -9,8 +9,7 @@ import {
   TrendingUp,
   ShieldCheck,
   CheckCircle2,
-  RotateCcw,
-  Sparkle
+  RotateCcw
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -29,8 +28,7 @@ function AnimatedNumber({ target, suffix = '', prefix = '', duration = 2200, isV
 
   useEffect(() => {
     if (!isVisible) {
-      setDisplayValue(0);
-      return;
+      return undefined;
     }
 
     let startTime = null;
@@ -61,7 +59,7 @@ function AnimatedNumber({ target, suffix = '', prefix = '', duration = 2200, isV
   }, [target, duration, isVisible, triggerKey]);
 
   // Format with commas (e.g. 2,000)
-  const formatted = displayValue.toLocaleString();
+  const formatted = (isVisible ? displayValue : 0).toLocaleString();
 
   return (
     <span className="animated-counter-val">
@@ -75,7 +73,7 @@ export default function StatsSection() {
   const [triggerKey, setTriggerKey] = useState(0);
   const sectionRef = useRef(null);
 
-  const defaultStats = [
+  const defaultStats = useMemo(() => [
     { 
       id: 1,
       label: "Enrolled Students", 
@@ -154,7 +152,7 @@ export default function StatsSection() {
       color: "#e11d48",
       badge: "Social Impact"
     }
-  ];
+  ], []);
 
   const [stats, setStats] = useState(defaultStats);
 
@@ -182,7 +180,7 @@ export default function StatsSection() {
       .catch(err => {
         console.warn('API /api/stats fallback:', err);
       });
-  }, []);
+  }, [defaultStats]);
 
   // Intersection observer for triggering counter on scroll
   useEffect(() => {
@@ -202,7 +200,7 @@ export default function StatsSection() {
     return () => observer.disconnect();
   }, []);
 
-  const triggerCelebration = (e, index) => {
+  const triggerCelebration = (e) => {
     // Trigger small confetti burst
     try {
       const rect = e.currentTarget.getBoundingClientRect();

@@ -8,7 +8,9 @@
     "dev:server": "node server/index.js",
     "dev:client": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "oxlint src server",
+    "check": "npm run lint && npm run build"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",

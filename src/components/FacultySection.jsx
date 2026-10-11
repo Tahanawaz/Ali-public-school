@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   GraduationCap, 
   Award, 
-  Mail, 
-  Quote 
+  Mail
 } from 'lucide-react';
 
 export default function FacultySection() {

@@ -1,13 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  BookOpen, 
-  Check, 
   GraduationCap, 
   ArrowRight, 
   Layers,
-  Award,
-  Sparkles,
-  Clock,
   CheckCircle2
 } from 'lucide-react';
 
@@ -15,7 +10,7 @@ export default function ProgramsSection({ onOpenAdmissions }) {
   const [programs, setPrograms] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
 
-  const defaultPrograms = [
+  const defaultPrograms = useMemo(() => [
     {
       id: "kindergarten-montessori",
       title: "Early Montessori & Kindergarten",
@@ -72,7 +67,7 @@ export default function ProgramsSection({ onOpenAdmissions }) {
       ],
       badge: "Matric Science & CS"
     }
-  ];
+  ], []);
 
   useEffect(() => {
     fetch('/api/programs')
@@ -87,7 +82,7 @@ export default function ProgramsSection({ onOpenAdmissions }) {
       .catch(() => {
         setPrograms(defaultPrograms);
       });
-  }, []);
+  }, [defaultPrograms]);
 
   const programList = programs.length > 0 ? programs : defaultPrograms;
   const currentProgram = programList[activeTab] || defaultPrograms[0];

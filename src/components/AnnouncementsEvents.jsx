@@ -5,8 +5,7 @@ import {
   MapPin, 
   Clock, 
   ArrowUpRight, 
-  CheckCircle,
-  FileText
+  CheckCircle
 } from 'lucide-react';
 
 export default function AnnouncementsEvents({ onOpenAdmissions }) {
@@ -34,11 +33,20 @@ export default function AnnouncementsEvents({ onOpenAdmissions }) {
       .catch(err => console.warn('Events fallback:', err));
   }, []);
 
-  const handleRSVP = (eventId) => {
-    setRsvpState(prev => ({
-      ...prev,
-      [eventId]: true
-    }));
+  const handleRSVP = async (eventId) => {
+    setRsvpState((current) => ({ ...current, [eventId]: 'pending' }));
+    try {
+      const response = await fetch(`/api/events/${eventId}/rsvp`, { method: 'POST' });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.message || 'Reservation failed.');
+      setEvents((current) => current.map((event) => event.id === eventId
+        ? { ...event, seatsLeft: data.data.seatsLeft }
+        : event));
+      setRsvpState((current) => ({ ...current, [eventId]: 'confirmed' }));
+    } catch (error) {
+      setRsvpState((current) => ({ ...current, [eventId]: 'error' }));
+      console.warn('Event reservation error:', error);
+    }
   };
 
   return (
@@ -112,7 +120,7 @@ export default function AnnouncementsEvents({ onOpenAdmissions }) {
 
             <div className="events-card-stack">
               {events.map((ev) => {
-                const isRsvpd = rsvpState[ev.id];
+                const reservationStatus = rsvpState[ev.id];
                 return (
                   <div key={ev.id} className="event-item-card">
                     <div className="event-date-box-clean">
@@ -142,17 +150,20 @@ export default function AnnouncementsEvents({ onOpenAdmissions }) {
                       </div>
 
                       <div className="event-footer-action">
-                        {isRsvpd ? (
+                        {reservationStatus === 'confirmed' ? (
                           <div className="rsvp-confirmed-pill">
                             <CheckCircle size={14} />
                             <span>Visitor Pass Reserved</span>
                           </div>
+                        ) : ev.seatsLeft <= 0 ? (
+                          <button className="btn-reserve-pass" disabled>Registration Closed</button>
                         ) : (
                           <button 
                             onClick={() => handleRSVP(ev.id)}
                             className="btn-reserve-pass"
+                            disabled={reservationStatus === 'pending'}
                           >
-                            <span>Reserve Free Visitor Pass</span>
+                            <span>{reservationStatus === 'pending' ? 'Reserving...' : reservationStatus === 'error' ? 'Try Reservation Again' : 'Reserve Free Visitor Pass'}</span>
                             <ArrowUpRight size={13} />
                           </button>
                         )}

@@ -52,11 +52,11 @@ export default function ContactSection() {
           message: data.message || "Submission failed. Please check required fields."
         });
       }
-    } catch (err) {
+    } catch {
       setStatus({
         loading: false,
-        success: true,
-        message: "Your message has been recorded! Our administrative office will be in touch shortly."
+        success: false,
+        message: "The message service is temporarily unavailable. Please call the campus office or try again shortly."
       });
     }
   };

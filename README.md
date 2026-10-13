@@ -59,3 +59,9 @@ npm run check       # Run lint checks and production build
 - Set `ADMIN_API_KEY` before starting the server to enable authenticated access to admission records.
 - Set `ALLOWED_ORIGINS` to a comma-separated list of trusted frontend origins in production.
 - All institutional claims, contact details, statistics, and testimonials should be verified by school management before launch.
+
+## Vercel deployment
+
+The repository includes a Vercel serverless entry point and routing configuration. Deploy the project root with the Vite framework preset; `vercel.json` sends `/api/*` requests to the Express function and all remaining routes to the React application.
+
+For a custom production domain, add its full origin (for example `https://school.example.com`) to the `ALLOWED_ORIGINS` environment variable in Vercel. Preview and standard `*.vercel.app` deployment origins are accepted automatically.

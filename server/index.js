@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { pathToFileURL } from 'url';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -7,11 +8,17 @@ const ADMIN_API_KEY = process.env.ADMIN_API_KEY;
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173')
   .split(',')
   .map((origin) => origin.trim());
+const vercelOrigins = [process.env.VERCEL_URL, process.env.VERCEL_PROJECT_PRODUCTION_URL]
+  .filter(Boolean)
+  .map((host) => `https://${host}`);
 
 app.disable('x-powered-by');
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    const isVercelDeployment = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin || '');
+    if (!origin || allowedOrigins.includes(origin) || vercelOrigins.includes(origin) || isVercelDeployment) {
+      return callback(null, true);
+    }
     return callback(new Error('Origin is not allowed by CORS'));
   }
 }));
@@ -434,6 +441,12 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`[APS Backend] Express API server running on http://localhost:${PORT}`);
-});
+const isDirectRun = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectRun) {
+  app.listen(PORT, () => {
+    console.log(`[APS Backend] Express API server running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;

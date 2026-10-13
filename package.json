@@ -9,7 +9,7 @@
     "dev:client": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "oxlint src server",
+    "lint": "oxlint src server api",
     "check": "npm run lint && npm run build"
   },
   "dependencies": {

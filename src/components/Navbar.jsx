@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Menu, 
   X, 
@@ -12,6 +12,7 @@ import {
 export default function Navbar({ onOpenAdmissions }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const headerRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +20,24 @@ export default function Navbar({ onOpenAdmissions }) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return undefined;
+
+    const syncHeaderHeight = () => {
+      document.documentElement.style.setProperty('--site-header-height', `${header.offsetHeight}px`);
+    };
+
+    syncHeaderHeight();
+    const resizeObserver = new ResizeObserver(syncHeaderHeight);
+    resizeObserver.observe(header);
+
+    return () => {
+      resizeObserver.disconnect();
+      document.documentElement.style.removeProperty('--site-header-height');
+    };
   }, []);
 
   const navLinks = [
@@ -31,7 +50,7 @@ export default function Navbar({ onOpenAdmissions }) {
   ];
 
   return (
-    <>
+    <div className="site-header-shell" ref={headerRef}>
       {/* Sleek Top Utility Strip */}
       <div className="top-utility-bar">
         <div className="container utility-container">
@@ -161,6 +180,6 @@ export default function Navbar({ onOpenAdmissions }) {
           </div>
         )}
       </header>
-    </>
+    </div>
   );
 }

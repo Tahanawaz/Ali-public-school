@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Users, 
   UserCheck, 
@@ -8,8 +8,7 @@ import {
   Award,
   TrendingUp,
   ShieldCheck,
-  CheckCircle2,
-  RotateCcw
+  CheckCircle2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -23,14 +22,10 @@ const iconMap = {
 };
 
 // Custom animated counter component
-function AnimatedNumber({ target, suffix = '', prefix = '', duration = 2200, isVisible, triggerKey }) {
+function AnimatedNumber({ target, suffix = '', prefix = '', duration = 2200 }) {
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
-    if (!isVisible) {
-      return undefined;
-    }
-
     let startTime = null;
     let animationFrameId;
 
@@ -56,10 +51,10 @@ function AnimatedNumber({ target, suffix = '', prefix = '', duration = 2200, isV
     return () => {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
-  }, [target, duration, isVisible, triggerKey]);
+  }, [target, duration]);
 
   // Format with commas (e.g. 2,000)
-  const formatted = (isVisible ? displayValue : 0).toLocaleString();
+  const formatted = displayValue.toLocaleString();
 
   return (
     <span className="animated-counter-val">
@@ -69,10 +64,6 @@ function AnimatedNumber({ target, suffix = '', prefix = '', duration = 2200, isV
 }
 
 export default function StatsSection() {
-  const [inView, setInView] = useState(false);
-  const [triggerKey, setTriggerKey] = useState(0);
-  const sectionRef = useRef(null);
-
   const defaultStats = useMemo(() => [
     { 
       id: 1,
@@ -182,24 +173,6 @@ export default function StatsSection() {
       });
   }, [defaultStats]);
 
-  // Intersection observer for triggering counter on scroll
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-        }
-      },
-      { threshold: 0.15 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
   const triggerCelebration = (e) => {
     // Trigger small confetti burst
     try {
@@ -218,26 +191,8 @@ export default function StatsSection() {
     }
   };
 
-  const handleReplay = () => {
-    setInView(false);
-    setTimeout(() => {
-      setTriggerKey(prev => prev + 1);
-      setInView(true);
-      try {
-        confetti({
-          particleCount: 80,
-          spread: 80,
-          origin: { y: 0.6 },
-          colors: ['#2563eb', '#60a5fa', '#3b82f6', '#10b981', '#f59e0b']
-        });
-      } catch {
-        // fallback safe
-      }
-    }, 150);
-  };
-
   return (
-    <section className="stats-amount-showcase-section" id="milestones" ref={sectionRef}>
+    <section className="stats-amount-showcase-section" id="milestones">
       {/* Background ambient lighting effects */}
       <div className="stats-ambient-glow stats-glow-1"></div>
       <div className="stats-ambient-glow stats-glow-2"></div>
@@ -263,14 +218,6 @@ export default function StatsSection() {
           </p>
 
           <div className="stats-action-row">
-            <button 
-              onClick={handleReplay} 
-              className="btn-replay-stats" 
-              title="Click to replay count animation with confetti"
-            >
-              <RotateCcw size={14} className="replay-icon" />
-              <span>Replay Milestone Count</span>
-            </button>
             <div className="stats-verified-pill">
               <ShieldCheck size={14} className="text-emerald" />
               <span>Registered BISE Institution Verified</span>
@@ -289,7 +236,7 @@ export default function StatsSection() {
                 key={item.id} 
                 className={`stat-card-animated reveal-up stagger-${idx + 1}`}
                 style={{ animationDelay: `${staggerDelay}s` }}
-                onClick={(e) => triggerCelebration(e, idx)}
+                onClick={triggerCelebration}
                 title="Click to celebrate this achievement!"
               >
                 {/* Glow border gradient backdrop */}
@@ -313,8 +260,6 @@ export default function StatsSection() {
                       suffix={item.suffix} 
                       prefix={item.prefix}
                       duration={2000 + idx * 200}
-                      isVisible={inView}
-                      triggerKey={triggerKey}
                     />
                   </div>
 
@@ -327,7 +272,7 @@ export default function StatsSection() {
                     <div 
                       className="stat-progress-fill" 
                       style={{ 
-                        width: inView ? `${item.percentage}%` : '0%',
+                        width: `${item.percentage}%`,
                         backgroundColor: item.color,
                         transition: `width ${1.8 + idx * 0.2}s cubic-bezier(0.16, 1, 0.3, 1)`
                       }}

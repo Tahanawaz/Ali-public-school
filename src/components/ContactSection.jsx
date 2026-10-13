@@ -93,7 +93,7 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <span className="info-row-label">School Campus Address</span>
-                  <p className="info-row-text">Main Campus, Block B, Model Town / Canal Road, Lahore</p>
+                  <p className="info-row-text">Ali Public High School, Railway Colony, Raiwind, Lahore</p>
                 </div>
               </div>
 

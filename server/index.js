@@ -54,13 +54,13 @@ const schoolData = {
     contact: {
       phone: "+92 (42) 3588-4100 / +92 (300) 948-2341",
       email: "admissions@alipublicschool.edu.pk",
-      address: "Main Education Campus, Block B, Model Town / Canal Road, Lahore",
+      address: "Ali Public High School, Railway Colony, Raiwind, Lahore",
       officeHours: "Monday - Saturday: 7:45 AM - 2:30 PM",
       principal: "Begum Farzana Ali (M.A., M.Ed.)"
     },
     socialLinks: {
-      facebook: "https://facebook.com",
-      instagram: "https://instagram.com",
+      facebook: "https://www.facebook.com/profile.php?id=100069327015477",
+      instagram: "https://instagram.com/ali_public_school_raiwind?srtk=MTV3NDVzb3c2MnBzNQ%3D%3D",
       youtube: "https://youtube.com"
     }
   },

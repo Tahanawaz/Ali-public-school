@@ -4,6 +4,7 @@
    ========================================================================== */
 
 :root {
+  --site-header-height: 112px;
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-urdu: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', sans-serif;
@@ -116,6 +117,19 @@ body {
 /* ==========================================================================
    TOP UTILITY STRIP
    ========================================================================== */
+.site-header-shell {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
+.school-app-wrapper > main {
+  padding-top: var(--site-header-height);
+}
+
 .top-utility-bar {
   background: var(--blue-950);
   color: #cbd5e1;
@@ -211,12 +225,15 @@ body {
    MAIN CLEAN NAVBAR
    ========================================================================== */
 .main-navbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
+  position: relative;
+  z-index: 1;
   background: #ffffff;
   border-bottom: 1px solid var(--border-subtle);
   transition: all var(--transition-smooth);
+}
+
+section[id] {
+  scroll-margin-top: calc(var(--site-header-height) + 8px);
 }
 
 .navbar-scrolled {
@@ -356,6 +373,12 @@ body {
 
 /* Mobile Dropdown */
 .mobile-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: calc(100vh - var(--site-header-height));
+  overflow-y: auto;
   background: #ffffff;
   border-bottom: 2px solid var(--blue-600);
   box-shadow: var(--shadow-dropdown);
@@ -2291,6 +2314,53 @@ body {
   margin-top: 2px;
 }
 
+.footer-social-block {
+  margin-top: 18px;
+}
+
+.footer-social-label {
+  display: block;
+  margin-bottom: 9px;
+  color: #94a3b8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.footer-social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 8px 12px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-full);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.footer-social-link:not(.is-placeholder):hover {
+  background: var(--blue-600);
+  border-color: var(--blue-400);
+  transform: translateY(-2px);
+}
+
+.footer-social-link.is-placeholder {
+  cursor: default;
+  opacity: 0.82;
+}
+
 .btn-footer-portal {
   margin-top: 14px;
   width: 100%;
@@ -2785,6 +2855,10 @@ button:disabled {
 
 /* Tablets & Large Mobile Devices (max-width: 768px) */
 @media (max-width: 768px) {
+  :root {
+    --site-header-height: 96px;
+  }
+
   .container {
     padding-left: 18px;
     padding-right: 18px;
